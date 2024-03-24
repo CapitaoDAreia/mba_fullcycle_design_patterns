@@ -15,7 +15,17 @@ const sendEmail = new SendEmail();
 mediator.on("InvoicesGenerated", async function (data: any) {
 	await sendEmail.execute(data);
 });
-const generateInvoices = new LoggerDecorator(new GenerateInvoices(contractRepository, new JsonPresenter(), mediator));
+
+// GENERATE INVOICES
+const generateInvoices = new GenerateInvoices(contractRepository, new JsonPresenter(), mediator)
+
+//GENERATE INVOICES - Decorator Pattern Applied
+const generateInvoicesDecorator = new LoggerDecorator(generateInvoices);
+
+// HTTP SERVER - Comes from an adapter that will servs the MainController
 const httpServer = new ExpressAdapter();
-new MainController(httpServer, generateInvoices);
+
+// CONTROLLER
+new MainController(httpServer, generateInvoicesDecorator);
+
 httpServer.listen(3000);
